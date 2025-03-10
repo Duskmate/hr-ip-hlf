@@ -19,6 +19,7 @@
 
 ROOTDIR=$(cd "$(dirname "$0")" && pwd)
 export PATH=/usr/local/bin:/usr/local/bin:$PATH
+# export PATH=${ROOTDIR}/../bin:${PWD}/../bin:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
 
