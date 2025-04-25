@@ -111,6 +111,16 @@ fi
 . scripts/envVar.sh
 . scripts/ccutils.sh
 
+echo "Checking Docker Authentication..."
+DOCKER_USER=$(docker info | grep Username | awk '{print $2}')
+
+if [ -z "$DOCKER_USER" ]; then
+  echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
+  exit 1
+else
+  echo "Docker is authenticated as: $DOCKER_USER"
+fi
+
 packageChaincode() {
   set -x
   peer lifecycle chaincode package ${CC_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
