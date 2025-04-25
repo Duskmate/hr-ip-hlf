@@ -118,7 +118,7 @@ if [ -z "$DOCKER_USER" ]; then
   echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
   exit 1
 else
-  echo "Docker is authenticated as: $DOCKER_USER"
+  echo "Docker is authenticated as: $DOCKER_USER in deployCC"
 fi
 
 packageChaincode() {
