@@ -69,7 +69,7 @@ function checkPrereqs() {
   # use the fabric tools container to see if the samples and binaries match your
   # docker images
   LOCAL_VERSION=$(peer version | sed -ne 's/^ Version: //p')
-  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm public.ecr.aws/bitnami/hyperledger-fabric-tools:latest peer version | sed -ne 's/^ Version: //p')
+  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-tools:latest peer version | sed -ne 's/^ Version: //p')
 
   infoln "LOCAL_VERSION=$LOCAL_VERSION"
   infoln "DOCKER_IMAGE_VERSION=$DOCKER_IMAGE_VERSION"
@@ -102,7 +102,7 @@ function checkPrereqs() {
       exit 1
     fi
     CA_LOCAL_VERSION=$(fabric-ca-client version | sed -ne 's/ Version: //p')
-    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm public.ecr.aws/bitnami/hyperledger-fabric-ca:latest fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
+    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-ca:latest fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
     infoln "CA_LOCAL_VERSION=$CA_LOCAL_VERSION"
     infoln "CA_DOCKER_IMAGE_VERSION=$CA_DOCKER_IMAGE_VERSION"
 
@@ -183,6 +183,17 @@ function createOrgs() {
   fi
 
   # Create crypto material using Fabric CA
+  # Check Docker Auth before compose
+  echo "Checking Docker Authentication..."
+  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  
+  if [ -z "$DOCKER_USER" ]; then
+    echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
+    exit 1
+  else
+    echo "Docker is authenticated as: $DOCKER_USER"
+  fi
+
   if [ "$CRYPTO" == "Certificate Authorities" ]; then
     infoln "Generating certificates using Fabric CA"
     ${CONTAINER_CLI_COMPOSE} -f compose/$COMPOSE_FILE_CA -f compose/$CONTAINER_CLI/${CONTAINER_CLI}-$COMPOSE_FILE_CA up -d 2>&1
@@ -244,6 +255,18 @@ function createOrgs() {
 
 # Bring up the peer and orderer nodes using docker compose.
 function networkUp() {
+
+  # Check Docker Auth before compose
+  echo "Checking Docker Authentication..."
+  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  
+  if [ -z "$DOCKER_USER" ]; then
+    echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
+    exit 1
+  else
+    echo "Docker is authenticated as: $DOCKER_USER"
+  fi
+
   checkPrereqs
 
   # generate artifacts if they don't exist
@@ -299,6 +322,17 @@ function createChannel() {
 
 ## Call the script to deploy a chaincode to the channel
 function deployCC() {
+# Check Docker Auth before compose
+  echo "Checking Docker Authentication..."
+  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  
+  if [ -z "$DOCKER_USER" ]; then
+    echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
+    exit 1
+  else
+    echo "Docker is authenticated as: $DOCKER_USER"
+  fi
+
   scripts/deployCC.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
 
   if [ $? -ne 0 ]; then
