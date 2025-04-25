@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-REPO_URL="https://github.com/DayalMukati/hr-ip-hlf.git"
+REPO_URL="https://github.com/Duskmate/hr-ip-hlf.git"
 TARGET_DIR="$(pwd)"
 
 # Clone the repository
