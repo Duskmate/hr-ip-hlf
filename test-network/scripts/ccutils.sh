@@ -3,6 +3,15 @@
 
 # installChaincode PEER ORG
 function installChaincode() {
+  echo "Checking Docker Authentication..."
+  DOCKER_USER=$(docker info | grep Username | awk '{print $2}')
+  
+  if [ -z "$DOCKER_USER" ]; then
+    echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
+    exit 1
+  else
+    echo "Docker is authenticated as: $DOCKER_USER in ccutils"
+  fi
   ORG=$1
   setGlobals $ORG
   set -x
