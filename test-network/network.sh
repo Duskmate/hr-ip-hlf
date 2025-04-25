@@ -185,7 +185,7 @@ function createOrgs() {
   # Create crypto material using Fabric CA
   # Check Docker Auth before compose
   echo "Checking Docker Authentication..."
-  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  DOCKER_USER=$(docker info | grep Username | awk '{print $2}')
   
   if [ -z "$DOCKER_USER" ]; then
     echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
@@ -258,7 +258,7 @@ function networkUp() {
 
   # Check Docker Auth before compose
   echo "Checking Docker Authentication..."
-  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  DOCKER_USER=$(docker info | grep Username | awk '{print $2}')
   
   if [ -z "$DOCKER_USER" ]; then
     echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
@@ -324,7 +324,7 @@ function createChannel() {
 function deployCC() {
 # Check Docker Auth before compose
   echo "Checking Docker Authentication..."
-  DOCKER_USER=$(docker info --format '{{.AuthConfig.Username}}')
+  DOCKER_USER=$(docker info | grep Username | awk '{print $2}')
   
   if [ -z "$DOCKER_USER" ]; then
     echo "ERROR: Docker is not authenticated! Pulls may be rate-limited."
